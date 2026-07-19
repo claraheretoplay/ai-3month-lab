@@ -397,176 +397,191 @@ GitHub 仓库
 第一周不要碰 PyTorch。先把 Python、NumPy、信号生成这条线跑顺。第二周再进入“数据集 + 简单机器学习训练循环”，这样后面学 PyTorch 会稳很多。
 
 ##week02
-## 第二周目标：PyTorch 入门与 BPSK 智能检测
+## 第二周目标
 
-本周把第一周生成的 BPSK 信号转换成 PyTorch 数据，并训练一个简单模型自动完成比特判决。建议每天学习 `1.5～2 小时`，只使用 CPU 即可。
+学习：
 
-### 第1天：安装 PyTorch，认识 Tensor
-
-学习内容：
-
-- 安装并验证 PyTorch。
-- 理解 Tensor 是什么。
-- 学习 `shape`、`dtype` 和 `device`。
-- 练习 Tensor 的创建、加减乘除和 NumPy 转换。
-
-```powershell
-python -m pip install torch numpy matplotlib
-python -c "import torch; print(torch.__version__)"
+```text
+数组、广播、矩阵乘法、随机数、向量化
 ```
 
-创建：`day01_tensor_basics.py`
+完成：
 
-完成标准：能够创建一维、二维 Tensor，并打印形状和数据类型。
+```text
+线性回归、逻辑回归、SVM hinge loss
+```
+
+理解核心流程：
+
+```text
+预测 → 计算 loss → 计算 gradient → 更新参数 → 重复训练
+```
+
+建议每天 `1.5～2小时`：概念学习30分钟、编程60分钟、复习与 Git 提交20分钟。
+
+### 第1天：NumPy 数组与形状
+
+学习：
+
+- 创建一维、二维数组。
+- 理解 `shape`、`ndim`、`dtype`。
+- 学习索引、切片和 `reshape()`。
+- 区分 Python 列表与 NumPy 数组。
+
+创建：`day01_numpy_arrays.py`
+
+实践：把多个接收信号组织成“行表示样本、列表示特征”的二维数组。
 
 当天结束能回答：
 
-- Tensor 和 NumPy 数组有什么相同与不同？
-- `shape`、`dtype`、`device` 分别是什么？
-- 为什么深度学习框架使用 Tensor？
+- `shape` 和 `ndim` 分别表示什么？
+- `(100,)` 和 `(100, 1)` 有什么区别？
+- 为什么机器学习数据通常是二维数组？
 
-### 第2天：生成 PyTorch 版 BPSK 数据集
+### 第2天：随机数、广播与向量化
 
-学习内容：
+学习：
 
-- 随机生成 `0/1` 比特。
-- 完成 `0→-1、1→+1` 的 BPSK 映射。
-- 添加高斯噪声。
-- 把接收信号作为特征 `X`，原始比特作为标签 `y`。
-- 使用 `reshape(-1, 1)` 调整数据形状。
+- 使用 `np.random.randn()` 和 `np.random.randint()`。
+- 理解数组和标量之间的广播。
+- 用数组运算代替 `for` 循环。
+- 复习 BPSK 映射与 AWGN。
 
-创建：`day02_bpsk_dataset.py`
+创建：`day02_vectorized_bpsk.py`
 
-目标数据形式：
+实践：
 
 ```python
-X.shape  # torch.Size([1000, 1])
-y.shape  # torch.Size([1000, 1])
+bits = np.random.randint(0, 2, 1000)
+symbols = 2 * bits - 1
+noise = noise_std * np.random.randn(1000)
+received = symbols + noise
+detected_bits = (received > 0).astype(int)
 ```
 
 当天结束能回答：
 
-- 机器学习中的样本、特征和标签是什么？
-- 为什么接收信号是 `X`，原始比特是 `y`？
-- 为什么模型输入通常需要固定形状？
+- 广播是什么？
+- 向量化为什么比 Python 循环更适合数值计算？
+- `randn()` 生成的数据具有什么分布？
 
-### 第3天：理解线性模型和二分类
+### 第3天：矩阵乘法与机器学习数据
 
-学习内容：
+学习：
 
-- 学习线性模型公式 `z = wx + b`。
-- 理解参数 `w` 和 `b`。
-- 使用 Sigmoid 把模型输出转换到 `0～1`。
-- 理解概率大于 `0.5`判为 `1`，否则判为 `0`。
-- 对比传统门限判决与模型判决。
+- 理解样本数、特征数和标签。
+- 学习转置 `.T` 和矩阵乘法 `@`。
+- 理解模型公式 `y_hat = X @ w + b`。
+- 使用随机数生成简单训练数据。
 
-创建：`day03_linear_model.py`
+创建：`day03_matrix_data.py`
 
-当天结束能回答：
+重点检查形状：
 
-- `w` 和 `b` 分别起什么作用？
-- Sigmoid 为什么适合二分类？
-- BPSK 门限判决和二分类模型有什么联系？
-
-### 第4天：学习自动求导 Autograd
-
-学习内容：
-
-- 使用 `requires_grad=True` 创建可训练参数。
-- 计算预测值和损失。
-- 使用 `loss.backward()` 计算梯度。
-- 手动更新一次 `w` 和 `b`。
-- 理解为什么每轮训练前需要清空梯度。
-
-创建：`day04_autograd_train.py`
+```text
+X：(样本数, 特征数)
+w：(特征数, 1)
+y：(样本数, 1)
+```
 
 当天结束能回答：
 
-- 损失函数衡量的是什么？
-- 梯度表示什么？
-- `backward()` 做了什么？
-- 为什么参数要沿梯度的反方向更新？
+- `X @ w` 为什么能够一次计算所有样本？
+- `X`、`w`、`b`、`y` 分别是什么？
+- 矩阵相乘时形状需要满足什么条件？
 
-### 第5天：使用 `nn.Module` 训练 BPSK 检测器
+### 第4天：手写线性回归
 
-学习内容：
+学习：
 
-- 使用 `nn.Linear(1, 1)` 创建模型。
-- 使用 `BCEWithLogitsLoss` 计算二分类损失。
-- 使用 `torch.optim.SGD` 更新参数。
-- 编写训练循环：前向计算、损失、反向传播、参数更新。
-- 打印每隔若干轮的 loss。
+- 创建 `y = 3x + 2 + noise` 数据。
+- 实现预测 `y_hat = X @ w + b`。
+- 实现均方误差 MSE。
+- 手写 `dw`、`db` 和参数更新。
+- 记录并绘制 loss 曲线。
 
-创建：`day05_train_detector.py`
+创建：`day04_linear_regression.py`
 
-完成标准：训练后比特判决准确率应明显高于随机猜测的 `50%`。
+参数更新：
+
+```python
+w = w - learning_rate * dw
+b = b - learning_rate * db
+```
+
+完成标准：loss 逐渐下降，训练出的 `w` 接近3、`b` 接近2。
+
+### 第5天：手写逻辑回归
+
+学习：
+
+- 理解回归与二分类的区别。
+- 实现 Sigmoid 函数。
+- 实现二元交叉熵 loss。
+- 手写逻辑回归训练循环。
+- 用带噪 BPSK 接收值预测原始比特。
+
+创建：`day05_logistic_regression.py`
 
 当天结束能回答：
 
-- `nn.Module` 是什么？
-- 损失函数和优化器分别负责什么？
-- 一个完整训练循环包含哪些步骤？
+- Sigmoid 为什么能把输出变成概率？
+- 为什么概率大于 `0.5` 可以判为类别1？
+- loss 下降与分类准确率上升有什么关系？
 
-### 第6天：使用 Dataset 和 DataLoader
+### 第6天：手写 SVM hinge loss
 
-学习内容：
+学习：
 
-- 使用 `TensorDataset` 封装 `X` 和 `y`。
-- 使用 `DataLoader` 分批读取数据。
-- 理解 `batch_size`、`shuffle` 和 epoch。
-- 将数据划分为训练集和测试集。
-- 使用 `torch.save()` 保存模型参数。
+- 把类别标签从 `0/1` 转换为 `-1/+1`。
+- 复习分类分数 `score = X @ w + b`。
+- 实现 hinge loss：`max(0, 1 - y * score)`。
+- 计算梯度并更新 `w`、`b`。
+- 统计 BPSK 比特检测准确率。
 
-创建：`day06_dataloader_train.py`
+创建：`day06_svm_hinge.py`
 
 当天结束能回答：
 
-- batch 是什么？
-- 为什么不一次使用全部训练数据？
-- epoch 和 iteration 有什么区别？
-- 训练集和测试集为什么必须分开？
+- `y * score >= 1` 表示什么？
+- 哪些样本会产生 hinge loss？
+- SVM 的间隔思想如何体现在 hinge loss 中？
 
-### 第7天：实验、整理项目并提交 Git
+### 第7天：比较模型并整理项目
 
-学习内容：
+学习与实践：
 
-- 分别测试 `noise_std = 0.1、0.5、1.0`。
-- 记录不同噪声下的检测准确率。
-- 绘制训练 loss 曲线或准确率曲线。
-- 编写第二周 `README.md`。
-- 使用 Git 保存本周成果。
+- 对比逻辑回归和 SVM 的分类结果。
+- 测试 `noise_std = 0.2、0.5、1.0`。
+- 绘制不同噪声下的准确率。
+- 整理重复函数，编写 `README.md`。
+- 检查并提交本周代码。
 
-创建：`day07_evaluate_detector.py`
+创建：`day07_compare_models.py`
 
 ```powershell
 git add .
-git commit -m "Complete week 02 PyTorch BPSK detector"
+git commit -m "Complete week 02 NumPy machine learning"
 ```
 
-当天结束能回答：
-
-- 噪声增大后准确率为什么下降？
-- 训练和测试有什么区别？
-- PyTorch 如何自动更新模型参数？
-- 这个模型与 SVM 二分类有什么共同点？
-
-第二周最终目录建议：
+最终目录：
 
 ```text
-week02_pytorch_bpsk/
-├── day01_tensor_basics.py
-├── day02_bpsk_dataset.py
-├── day03_linear_model.py
-├── day04_autograd_train.py
-├── day05_train_detector.py
-├── day06_dataloader_train.py
-├── day07_evaluate_detector.py
+week02_numpy_ml/
+├── day01_numpy_arrays.py
+├── day02_vectorized_bpsk.py
+├── day03_matrix_data.py
+├── day04_linear_regression.py
+├── day05_logistic_regression.py
+├── day06_svm_hinge.py
+├── day07_compare_models.py
 └── README.md
 ```
 
-本周最重要的主线是：
+本周所说的“optimizer”暂时不是 PyTorch 中的对象，而是你亲手写下的参数更新：
 
-```text
-通信比特 → BPSK信号 → 添加噪声 → Tensor数据
-→ 模型预测 → 计算损失 → 反向传播 → 更新参数
+```python
+parameter = parameter - learning_rate * gradient
 ```
+
+掌握这个过程后，第3周学习 PyTorch 自动求导和 `torch.optim` 时，就能理解框架替你完成了哪些工作。
