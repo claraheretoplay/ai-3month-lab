@@ -6,7 +6,8 @@ This week I learned:
 - understand matrix multiplication, transposition, data shapes, and the linear model y_hat = X @ w + b
 - implement linear regression from scratch using MSE, gradient descent, parameter updates, and loss curves
 - implement logistic regression with the Sigmoid function, binary cross-entropy, and gradient descent
-
+- implement SVM classification from scratch using {-1, +1} labels, hinge loss, gradient descent, and BPSK detection
+- compare Logistic Regression and SVM under different noise levels, visualize accuracy, and organize the project
 
 
 ## Files
@@ -15,3 +16,5 @@ This week I learned:
 - day03_matrix_data.py: create synthetic machine-learning data and demonstrate matrix multiplication and data shapes
 - day04_linear_regression.py: generate linear data, train a model with MSE and gradient descent, and plot the loss curve
 - day05_logistic_regression.py: implement Sigmoid, binary cross-entropy, logistic regression training, and BPSK bit detection
+- day06_svm_hinge.py: implement SVM hinge loss, gradient updates, and BPSK symbol detection
+- day07_compare_models.py: compare Logistic Regression and SVM accuracy under different noise levels
