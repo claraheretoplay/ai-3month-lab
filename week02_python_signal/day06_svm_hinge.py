@@ -18,7 +18,7 @@ received=symbols+noise
 
 #输入数据和标签
 X=received.reshape(-1,1)#SVM标签必须是1或-1
-y=symbols.reshape(-1,1)
+y=symbols.reshape(-1,1)#svm使用-1/+1标签
 
 #初始化参数
 w=np.zeros((1,1))#创建一个全部由0组成的Numpy数组，数组形状为1行1列，内容为[[0.]]，等价于w=np.array([[0.0]])

@@ -38,7 +38,7 @@ received=symbols+noise
 
 #转换为机器学习数据形状：“每行一个样本，每列一个特征”的二维向量格式
 X=received.reshape(-1,1)#将以为数据转换为“多行一列”的二维数组，-1表示让numpy根据元素总数自动计算行数
-y=bits.reshape(-1,1)
+y=bits.reshape(-1,1)#逻辑回顾使用0/1标签
 
 #初始化参数
 w=np.zeros((1,1))

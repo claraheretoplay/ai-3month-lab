@@ -585,3 +585,234 @@ parameter = parameter - learning_rate * gradient
 ```
 
 掌握这个过程后，第3周学习 PyTorch 自动求导和 `torch.optim` 时，就能理解框架替你完成了哪些工作。
+
+##week03
+下面的计划严格依据截图中的第三周目标：学习 PyTorch 核心组件，用 MNIST 完成包含训练集、验证集、模型保存和加载的命令行项目。
+
+本周选择 **MNIST + 简单全连接网络 MLP**。暂时不加入 CNN 和通信调制识别，那是第4周的任务。
+
+## 第三周目标
+
+掌握：
+
+```text
+torch.Tensor
+requires_grad / backward
+nn.Module
+Dataset / DataLoader
+torch.optim
+```
+
+最终能运行：
+
+```powershell
+python train.py --epochs 3
+python evaluate.py --checkpoint checkpoints/mnist_mlp.pth
+```
+
+建议每天学习 `1.5～2小时`。
+
+### 第1天：Tensor 基础
+
+安装并检查 PyTorch：
+
+```powershell
+python -m pip install torch torchvision
+python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"
+```
+
+`cuda.is_available()` 显示 `False` 也没关系，本周用 CPU 即可。
+
+学习：
+
+- 创建 Tensor。
+- 理解 `shape`、`dtype`、`device`。
+- Tensor 的索引、变形和矩阵乘法。
+- NumPy 与 Tensor 相互转换。
+
+创建：`tensor_basics.py`
+
+当天结束能回答：
+
+- Tensor 和 NumPy 数组有什么联系？
+- `dtype` 和 `device` 分别是什么？
+- `reshape()` 和矩阵乘法有什么作用？
+
+### 第2天：自动求导 `requires_grad`
+
+学习：
+
+- 创建需要梯度的参数。
+- 理解计算图。
+- 使用 `loss.backward()` 计算梯度。
+- 使用 `.grad` 查看梯度。
+- 理解为什么要清空梯度。
+
+创建：`autograd_basics.py`
+
+用一个简单公式实验：
+
+```python
+y = w * x + b
+loss = (y - target) ** 2
+loss.backward()
+```
+
+当天结束能回答：
+
+- `requires_grad=True` 表示什么？
+- `backward()` 做了什么？
+- PyTorch 自动求导替代了第2周的哪部分代码？
+
+### 第3天：使用 `nn.Module` 定义模型
+
+创建：`model.py`
+
+模型结构：
+
+```text
+28×28图像
+   ↓ Flatten
+784个数
+   ↓ Linear
+128个特征
+   ↓ ReLU
+10个类别输出
+```
+
+学习：
+
+- 继承 `nn.Module`。
+- 在 `__init__()` 中定义网络层。
+- 在 `forward()` 中定义计算过程。
+- 理解 logits 和十个类别输出。
+
+当天结束能回答：
+
+- `nn.Module` 的作用是什么？
+- `forward()` 定义了什么？
+- 为什么最后一层需要输出10个数？
+
+### 第4天：Dataset 和 DataLoader
+
+创建：`dataset.py`
+
+学习：
+
+- 使用 `torchvision.datasets.MNIST` 下载数据。
+- 使用 `transforms.ToTensor()` 转换图片。
+- 划分训练集和验证集。
+- 使用 `DataLoader` 分批读取数据。
+- 理解 `batch_size` 和 `shuffle`。
+
+建议划分：
+
+```text
+训练集：55000张
+验证集：5000张
+```
+
+当天结束能回答：
+
+- Dataset 和 DataLoader 分别负责什么？
+- batch 是什么？
+- 为什么训练集需要 `shuffle=True`？
+
+### 第5天：完成训练循环
+
+创建：`train.py`
+
+训练流程：
+
+```text
+读取一个batch
+→ model(images)
+→ 计算CrossEntropyLoss
+→ optimizer.zero_grad()
+→ loss.backward()
+→ optimizer.step()
+```
+
+学习：
+
+- 使用 `nn.CrossEntropyLoss()`。
+- 使用 `torch.optim.Adam`。
+- 训练1～3个 epoch。
+- 打印每个 epoch 的平均 loss。
+- 通过命令行参数设置学习率和训练轮数。
+
+当天结束能回答：
+
+- loss、gradient、optimizer 各自负责什么？
+- 为什么先 `zero_grad()` 再 `backward()`？
+- `optimizer.step()` 更新了什么？
+
+### 第6天：验证、保存和加载模型
+
+创建：`evaluate.py`
+
+学习：
+
+- 使用 `model.eval()` 切换为验证模式。
+- 使用 `torch.no_grad()` 关闭梯度计算。
+- 计算验证集 accuracy。
+- 使用 `torch.save()` 保存参数。
+- 使用 `load_state_dict()` 加载参数。
+
+保存位置：
+
+```text
+checkpoints/mnist_mlp.pth
+```
+
+当天结束能回答：
+
+- 训练集和验证集有什么区别？
+- `model.train()` 和 `model.eval()` 有什么区别？
+- 为什么加载参数前必须先创建相同结构的模型？
+
+### 第7天：整理为命令行项目
+
+完成以下工作：
+
+- 检查 `model.py`、`dataset.py`、`train.py` 的职责是否清楚。
+- 确认训练、验证、保存和加载均可运行。
+- 给 `train.py` 增加 `--epochs`、`--batch-size`、`--lr` 参数。
+- 编写 `README.md` 和 `.gitignore`。
+- 将 `data/`、`__pycache__/` 和 `*.pth` 加入 `.gitignore`。
+- 提交 Git。
+
+```powershell
+git add .
+git commit -m "Complete week 03 PyTorch MNIST project"
+```
+
+最终项目结构：
+
+```text
+week03_pytorch_mnist/
+├── tensor_basics.py
+├── autograd_basics.py
+├── model.py
+├── dataset.py
+├── train.py
+├── evaluate.py
+├── README.md
+├── .gitignore
+├── data/
+└── checkpoints/
+```
+
+本周最重要的理解是：
+
+```text
+第2周：自己计算梯度并更新参数
+第3周：PyTorch自动计算梯度，optim负责更新参数
+```
+
+第三周结束时，你应该能独立说明并运行一个完整流程：
+
+```text
+准备数据 → 分批读取 → 模型预测 → 计算loss
+→ 反向传播 → 更新参数 → 验证准确率 → 保存和加载模型
+```
