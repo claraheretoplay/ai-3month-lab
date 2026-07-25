@@ -8,6 +8,8 @@ from torchvision import datasets,transforms
 
 from model import SimpleNet
 
+from pathlib import Path
+
 #main()主函数
 def main():
     parser=argparse.ArgumentParser()    #创建一个“命令行参数解析器”，并保存到变量parser中
@@ -151,6 +153,14 @@ def main():
             f"loss={average_loss:.4f}"
             f"val_accuracy={accuracy:.4f}"
         )
+
+    #增加自动创建目录（需要import区域增加import path）
+    Path("checkpoints").mkdir(exist_ok=True)
+
+    torch.save(
+        model.state_dict(),
+        "checkpoints/mnist_mlp.pth"
+    )
 
 #程序入口
 if __name__ == "__main__":
