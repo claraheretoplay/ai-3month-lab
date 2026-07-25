@@ -131,7 +131,7 @@ def main():
         correct=0
         total=0
 
-        with torch.no_grad():
+        with torch.no_grad():   #不计算梯度
             for images,labels in val_loader:
                 images=images.to(device)
                 labels=labels.to(device)
