@@ -816,3 +816,345 @@ week03_pytorch_mnist/
 准备数据 → 分批读取 → 模型预测 → 计算loss
 → 反向传播 → 更新参数 → 验证准确率 → 保存和加载模型
 ```
+##week04
+
+## 第四周目标
+
+```text
+合成 BPSK、QPSK、8PSK、QAM 信号
+加入不同 SNR 的噪声
+使用 1D-CNN 进行调制方式分类
+绘制训练 loss、验证 accuracy、不同 SNR 下的准确率曲线
+```
+
+本周建议将 `QAM` 具体选择为 `16QAM`，最终完成一个四分类项目：
+
+```text
+类别0：BPSK
+类别1：QPSK
+类别2：8PSK
+类别3：16QAM
+```
+
+每条信号使用 I/Q 两路数据表示，单条样本形状为：
+
+```text
+(2, 128)
+```
+
+其中：
+
+- `2`：I 路和 Q 路。
+- `128`：一条信号包含128个采样点。
+- 一个 batch 的输入形状为：`(batch_size, 2, 128)`。
+
+### 第1天：理解调制识别任务和 I/Q 数据
+
+学习：
+
+- 复基带信号是什么。
+- I 路和 Q 路分别表示什么。
+- 为什么一条通信信号可以用两个数组表示。
+- 调制识别中的输入和标签是什么。
+
+建立数据约定：
+
+```text
+输入：一段带噪声的 I/Q 信号
+标签：BPSK、QPSK、8PSK 或 16QAM
+```
+
+创建：`signal_generation.py`
+
+先实现无噪声的：
+
+- BPSK
+- QPSK
+
+建议绘制星座图，观察两种调制的点分布。
+
+当天结束能回答：
+
+- 为什么调制识别需要 I/Q 两路数据？
+- 为什么一条样本不能只保存一个调制名称？
+- BPSK 和 QPSK 的星座点有什么区别？
+
+### 第2天：生成四种调制信号
+
+在 `signal_generation.py` 中继续实现：
+
+- `generate_bpsk()`
+- `generate_qpsk()`
+- `generate_8psk()`
+- `generate_16qam()`
+
+标签对应关系：
+
+```python
+BPSK  -> 0
+QPSK  -> 1
+8PSK  -> 2
+16QAM -> 3
+```
+
+学习：
+
+- PSK 调制通过改变相位传递信息。
+- QAM 同时改变幅度和相位。
+- 不同调制方式具有不同的星座图。
+
+完成标准：
+
+- 每种调制方式都能生成长度为128的 I/Q 数据。
+- 能绘制四种调制方式的星座图。
+- 四种类别的样本形状一致。
+
+当天结束能回答：
+
+- PSK 和 QAM 的主要区别是什么？
+- 为什么不同类别的样本必须具有相同长度？
+- 标签为什么要转换成整数？
+
+### 第3天：根据 SNR 添加 AWGN 噪声
+
+学习：
+
+- 信号功率和噪声功率。
+- SNR 的含义。
+- 如何根据指定 SNR 生成噪声。
+- 为什么训练数据中需要多个 SNR。
+
+基本关系：
+
+```text
+SNR越大 → 噪声越小 → 信号越清晰
+SNR越小 → 噪声越大 → 信号越难识别
+```
+
+在 `signal_generation.py` 中实现：
+
+```python
+add_awgn(signal, snr_db)
+```
+
+建议先测试：
+
+```text
+SNR = 0 dB
+SNR = 5 dB
+SNR = 10 dB
+SNR = 20 dB
+```
+
+绘制不同 SNR 下的星座图。
+
+当天结束能回答：
+
+- SNR 越大，信号会发生什么变化？
+- 为什么低 SNR 下不同调制方式更难区分？
+- 训练数据为什么不能只有一种噪声强度？
+
+### 第4天：制作 Dataset 和 DataLoader
+
+创建：`dataset.py`
+
+学习：
+
+- 生成四类调制信号。
+- 给每条信号添加噪声。
+- 将 NumPy 数组转换为 PyTorch Tensor。
+- 使用 `Dataset` 和 `DataLoader`。
+- 划分训练集和验证集。
+
+数据形式：
+
+```text
+X.shape = (样本数, 2, 128)
+y.shape = (样本数,)
+```
+
+建议初始数据量：
+
+```text
+每种调制方式：1000条训练样本
+每种调制方式：200条验证样本
+```
+
+当天结束能回答：
+
+- 为什么 CNN 输入需要形如 `(batch, channel, length)`？
+- `Dataset` 和 `DataLoader` 分别负责什么？
+- 为什么训练集和验证集要使用不同数据？
+
+### 第5天：定义 1D-CNN 模型
+
+创建：`model.py`
+
+学习：
+
+- `nn.Conv1d`
+- `nn.ReLU`
+- `nn.MaxPool1d`
+- `nn.AdaptiveAvgPool1d`
+- `nn.Linear`
+
+建议模型结构：
+
+```text
+输入：(batch, 2, 128)
+        ↓
+Conv1d(2, 32)
+        ↓
+ReLU
+        ↓
+MaxPool1d
+        ↓
+Conv1d(32, 64)
+        ↓
+ReLU
+        ↓
+AdaptiveAvgPool1d
+        ↓
+Linear(64, 4)
+        ↓
+输出4个类别分数
+```
+
+当天结束能回答：
+
+- `Conv1d` 为什么适合处理一维通信信号？
+- 输入的两个通道分别是什么？
+- 为什么最后一层输出4个数？
+
+先只测试模型能否正常完成前向计算：
+
+```python
+output = model(x)
+print(output.shape)
+```
+
+预期输出：
+
+```text
+(batch_size, 4)
+```
+
+### 第6天：训练、验证和保存模型
+
+创建：`train.py`
+
+完成训练流程：
+
+```text
+读取训练数据
+→ 模型前向计算
+→ 计算 CrossEntropyLoss
+→ 清空梯度
+→ 反向传播
+→ optimizer 更新参数
+→ 在验证集上计算 accuracy
+```
+
+训练参数建议：
+
+```text
+batch_size = 64
+learning_rate = 0.001
+epochs = 10
+train_snr = 10 dB
+```
+
+使用：
+
+```python
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+```
+
+每个 epoch 记录：
+
+```text
+train_loss
+validation_accuracy
+```
+
+保存最佳模型：
+
+```text
+checkpoints/best_model.pth
+```
+
+当天结束能回答：
+
+- `CrossEntropyLoss` 为什么适合四分类？
+- `optimizer.step()` 做了什么？
+- 为什么要保存验证集准确率最高的模型？
+- 训练 loss 和验证 accuracy 分别反映什么？
+
+### 第7天：测试不同 SNR 并整理项目
+
+创建：`evaluate_snr.py`
+
+加载第6天保存的模型，在不同 SNR 下测试：
+
+```text
+SNR = 0 dB
+SNR = 5 dB
+SNR = 10 dB
+SNR = 15 dB
+SNR = 20 dB
+```
+
+绘制两类图：
+
+```text
+1. 训练 loss 曲线
+2. 不同 SNR 下的准确率曲线
+```
+
+预期趋势：
+
+```text
+SNR 增大 → 信号更清晰 → 分类准确率通常提高
+SNR 减小 → 噪声更强 → 分类准确率通常下降
+```
+
+最终项目结构：
+
+```text
+week04_modulation_cnn/
+├── signal_generation.py
+├── dataset.py
+├── model.py
+├── train.py
+├── evaluate_snr.py
+├── README.md
+├── figures/
+│   ├── loss_curve.png
+│   └── accuracy_vs_snr.png
+└── checkpoints/
+    └── best_model.pth
+```
+
+建议使用命令行运行：
+
+```powershell
+python train.py
+python evaluate_snr.py
+```
+
+本周结束时，应该能够完整解释：
+
+```text
+生成调制信号
+→ 转换成 I/Q 数组
+→ 添加指定 SNR 的 AWGN
+→ 构造 Dataset
+→ DataLoader 分批读取
+→ 1D-CNN 提取特征
+→ 输出调制类别
+→ 保存模型
+→ 测试不同 SNR 下的准确率
+```
+
+本周的最终成果不是只得到一个准确率，而是完成一个完整的通信 AI 训练项目。
