@@ -19,6 +19,17 @@ from model import ModulationCNN
 #新增，为evalute_snr.py的调用做准备
 import matplotlib.pyplot as plt
 
+#新增，为checkpoints和figures存储在绝对项目路径做准备
+from pathlib import Path
+
+BASE_DIR=Path(__file__).resolve().parent
+CHECKPOINT_DIR=BASE_DIR/"checkpoints"
+FIGURES_DIR=BASE_DIR/"figures"
+
+CHECKPOINT_DIR.mkdir(exist_ok=True)
+FIGURES_DIR.mkdir(exist_ok=True)
+#新增，为checkpoints和figures存储在绝对项目路径做准备
+
 #===============================
 #1.超参数
 #===============================
@@ -200,7 +211,9 @@ def main():
                     "optimizer_state_dict":optimizer.state_dict(),
                     "val_accuracy":val_accuracy,
                 },
-                "checkpoints/best_model.pth"
+                #"checkpoints/best_model.pth"
+                #调整为绝对路径
+                CHECKPOINT_DIR/"best_model.pth"
             )
 
             print("Best model saved.")
@@ -214,12 +227,16 @@ def main():
             "train_losses":train_losses,
             "val_accuracies":val_accuracies,
         },
-        "checkpoints/training_history.pth"
+        #"checkpoints/training_history.pth"
+        #调整为绝对路径
+        CHECKPOINT_DIR/"training_history.pth"
     )
 
     #新增，为evaluate_snr.py的调用做准备
     history=torch.load(
-        "checkpoints/training_history.pth"
+        # "checkpoints/training_history.pth"
+        # 调整为绝对路径
+        CHECKPOINT_DIR/"training_history.pth"
     )
 
     os.makedirs("figures",exist_ok=True)
@@ -243,7 +260,9 @@ def main():
     plt.tight_layout()
 
     plt.savefig(
-        "figures/loss_curve.png",
+        #"figures/loss_curve.png",
+        #调整为绝对路径
+        FIGURES_DIR/"loss_curve.png",
         dpi=150
     )
 

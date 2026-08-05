@@ -5,6 +5,16 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 
+#新增，为checkpoints和figures存储在绝对项目路径做准备
+from pathlib import Path
+
+BASE_DIR=Path(__file__).resolve().parent
+CHECKPOINT_PATH=BASE_DIR/"checkpoints"/"best_model.pth"
+FIGURES_DIR=BASE_DIR/"figures"
+
+#CHECKPOINT_PATH只读取，无需保存，因而无需mkdir
+FIGURES_DIR.mkdir(exist_ok=True)
+
 from signal_generation import(
     generate_bpsk,
     generate_qpsk,
@@ -117,7 +127,9 @@ def main():
     #加载第6天保存的最佳模型
     ##加载路径，指定加载模型参数时使用的设备
     checkpoint=torch.load(
-        "checkpoints/best_model.pth",
+        #"checkpoints/best_model.pth",
+        #调整为绝对路径
+        CHECKPOINT_PATH,
         map_location=DEVICE
     )
     ##加载模型参数
@@ -184,7 +196,9 @@ def main():
 
     plt.tight_layout()#自动调整图像中各元素的布局，避免：坐标轴标签被裁剪、标题和图像重叠、多个子图之间距离太近、横纵坐标文字显示不完整
     plt.savefig(
-        "figures/accuracy_vs_snr.png",
+        #"figures/accuracy_vs_snr.png",
+        #调整为绝对路径
+        FIGURES_DIR/"accuracy_vs_snr.png",
         dpi=150
     )#dpi是像素
     #图像大小为：宽8*150=1200像素，高5*150=750像素
