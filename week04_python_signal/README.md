@@ -1,4 +1,4 @@
-# Week 03: Python and Communication Signal Basics
+# Week 04: Python and Communication Signal Basics
 
 This week I learned:
 - how I/Q signals represent digital modulation and how to generate, normalize, label, add noise to, and visualize BPSK, QPSK, 8PSK, and 16QAM I/Q signals in Python.
