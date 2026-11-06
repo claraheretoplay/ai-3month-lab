@@ -4,8 +4,10 @@ This week I learned:
 - how to use NumPy to generate, split, and visualize three-class 2D data and train a perceptron for linear classification.
 - how to implement Linear layers and ReLU, Sigmoid, and Tanh activations with forward and backward propagation.
 - how to convert logits into class probabilities with Softmax, evaluate predictions with cross-entropy loss, and compute stable gradients.
+- how to assemble a two-layer MLP, complete forward and backward propagation, and verify analytical gradients with finite differences.
 
 ## Files
 - data.py and perceptron_demo.py: generate the data, implement and train the perceptron, evaluate accuracy, and plot the classification results.
 - layers.py: implement Linear forward/backward propagation, calculate parameter gradients, and implement activation functions.
 - losses.py: implement numerically stable Softmax, cross-entropy loss, and the combined Softmax-cross-entropy gradient.
+- model.py and run_model.py and difference.py: define the MLP, compute parameter gradients through backpropagation, and compare them with numerical gradients.
