@@ -5,9 +5,15 @@ This week I learned:
 - how to implement Linear layers and ReLU, Sigmoid, and Tanh activations with forward and backward propagation.
 - how to convert logits into class probabilities with Softmax, evaluate predictions with cross-entropy loss, and compute stable gradients.
 - how to assemble a two-layer MLP, complete forward and backward propagation, and verify analytical gradients with finite differences.
+- how to train an MLP with gradient descent, monitor training loss and training and validation accuracy, and visualize its decision boundary.
+- how to implement Adam with moment estimates and bias correction, and compare its training loss and validation accuracy with SGD using identical data and initial parameters.
+- how to identify overfitting, apply L2 regularization, compare training and validation performance, and save and reload the best model.
 
 ## Files
 - data.py and perceptron_demo.py: generate the data, implement and train the perceptron, evaluate accuracy, and plot the classification results.
 - layers.py: implement Linear forward/backward propagation, calculate parameter gradients, and implement activation functions.
 - losses.py: implement numerically stable Softmax, cross-entropy loss, and the combined Softmax-cross-entropy gradient.
 - model.py and run_model.py and difference.py: define the MLP, compute parameter gradients through backpropagation, and compare them with numerical gradients.
+- train.py: implement the training loop and parameter updates, evaluate accuracy, and plot training curves and the learned decision boundary.
+- optimizers.py and compare_optimizers.py: implement SGD and Adam, train identical MLPs with both optimizers, and plot their training loss and validation accuracy curves.
+- overfit_demo.py: compare an MLP with and without L2 regularization, plot learning curves, and save and reload the best validation checkpoints.
