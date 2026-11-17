@@ -1,0 +1,14 @@
+{
+    "version":"0.2.0",
+    "configurations":[
+        {
+            "name": "调试 week06 run_batch",
+            "type":"debugpy",
+            "request": "launch",
+            "module":"week06_python_signal.run_batch",
+            "cwd": "${workspaceFolder}",
+            "console":"integratedTerminal",
+            "justMyCode":true
+        }
+    ]
+}
